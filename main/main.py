@@ -1,14 +1,14 @@
 import pickle
 import tensorflow as tf
 import numpy as np
-import time
+import util
 
 # load tokenizer word index
-with open('Culinary-Companion-word_index.pickle', 'rb') as handle:
+with open('main/model/Culinary-Companion-word_index.pickle', 'rb') as handle:
     tokenizer = pickle.load(handle)
 
 # load trained rnn model
-recommendation_model = tf.keras.models.load_model('Culinary-Companion-V0.1.keras')
+recommendation_model = tf.keras.models.load_model('main/model/Culinary-Companion-V0.1.keras')
 
 def get_recipe_recommendation(ingredients: str) -> dict[str, str]:
     max_seq_len = 232
@@ -31,13 +31,18 @@ def get_recipe_recommendation(ingredients: str) -> dict[str, str]:
     outputlist = ingredients.split(" | ")
     recipe = {}
     recipe["NER"] = outputlist[0]
-    recipe["Recipe Title"] = outputlist[1]
-    recipe["Ingredients needed"] = outputlist[2]
+    recipe["Title"] = outputlist[1]
+    recipe["Ingredients"] = outputlist[2]
     recipe["Direction"] = outputlist[3]
     return recipe
 
-print()
+#print()
 print("Application output:")
-while(True):
-    ing = input("Enter comma seperated ingredients:")
-    print(get_recipe_recommendation(ing))
+#for i in range(1, 5):
+#    print(get_recipe_recommendation(ocr.get_text(f"testdata/{i}.png")))
+
+recipe = get_recipe_recommendation(util.get_text("main/testdata/3.png"))
+output_text = f'Today let us cook {recipe["Title"]}, you need {recipe["Ingredients"]}, here is the steps to cook it, {recipe["Direction"]}'
+
+print(output_text)
+util.generate_speech(output_text)
